@@ -34,14 +34,15 @@ def time_transformer(times_list):
 
 def year_transformer(year):
     year = year.lower()
-    if "transfer" in year:
+    if "graduate" in year:
+        return 4
+    if "senior" in year:
         return 3
-    elif "junior" in year or "senior" in year:
+    if "junior" in year:
         return 2
-    elif "sophomore" in year:
+    if "sophomore" in year:
         return 1
-    else:
-        return 1
+    return 1
 
 
 def gender_transformer(gender):
@@ -65,18 +66,16 @@ def race_transformer(race):
             return 2
         elif race == "Black/African American":
             return 3
-        elif "Alaska" in race:
+        elif race == "Indigenous":
             return 4
-        elif "Islander" in race:
-            return 5
         elif "Middle-Eastern" in race:
-            return 6
+            return 5
         elif race == "Multiple races":
-            return 7
+            return 6
         elif race == "Prefer not to answer" or True:
-            return 8
+            return 7
     else:
-        return 7
+        return 6
 
 
 def timezone_transformer_delta(tz, delta=2):
@@ -109,21 +108,8 @@ def email_transformer(email):
 
 
 # ## cancelled discussions; 12-1 and 5-6
-# def discussion_transformer(disc_list):
-#     times_list = []
-#     if "10-11 M/W" in disc_list:
-#         times_list.append(10)
-#     if "11-12 M/W" in disc_list:
-#         times_list.append(11)
-#     if "1-2 M/W" in disc_list:
-#         times_list.append(1)
-#     if "2-3 M/W" in disc_list:
-#         times_list.append(2)
-#     if "3-4 M/W" in disc_list:
-#         times_list.append(3)
-#     if "4-5 M/W" in disc_list:
-#         times_list.append(4)
-#     return times_list
+def discussion_transformer(disc_list):
+    return list(map(lambda x: int(x.strip("[']").split(", ")[0]), disc_list))
 
 
 ROW_CONFIG = Row(
@@ -167,20 +153,6 @@ ROW_CONFIG = Row(
             is_optional=True,
         ),
         Column(
-            "times of the day",
-            "meeting_time",
-            "checkbox",
-            # transformer=time_transformer,
-            is_optional=True,
-        ),
-        Column(
-            "days of the week",
-            "meeting_days",
-            "checkbox",
-            # transformer=days_transformer,
-            is_optional=True,
-        ),
-        Column(
             "Would you like to attend the same discussion",
             "disc_with_group",
             "text",
@@ -192,54 +164,12 @@ ROW_CONFIG = Row(
             "disc_times_options",
             "checkbox",
             is_optional=True,
-            # transformer=discussion_transformer,
-        ),
-        Column(
-            "2nd Group Member Berkeley Student Email",
-            "groupmember2",
-            "email",
-            is_optional=True,
-            transformer=email_transformer,
-        ),
-        Column(
-            "3rd Group Member Berkeley Student Email",
-            "groupmember3",
-            "email",
-            is_optional=True,
-            transformer=email_transformer,
-        ),
-        Column(
-            "4th Group Member Berkeley Student Email",
-            "groupmember4",
-            "email",
-            is_optional=True,
-            transformer=email_transformer,
-        ),
-        Column(
-            "5th Group Member Berkeley Student Email",
-            "groupmember5",
-            "email",
-            is_optional=True,
-            transformer=email_transformer,
-        ),
-        Column(
-            "6th Group Member Berkeley Student Email",
-            "groupmember6",
-            "email",
-            is_optional=True,
-            transformer=email_transformer,
+            transformer=discussion_transformer,
         ),
         Column(
             "Will you be on the Berkeley campus",
             "remote",
             "radio",
-            is_optional=True,
-            transformer=lambda x: "Yes" in x,
-        ),
-        Column(
-            "discussion section times",
-            "sections",
-            "checkbox",
             is_optional=True,
             transformer=lambda x: "Yes" in x,
         ),
@@ -261,7 +191,7 @@ ROW_CONFIG = Row(
 )
 
 CONSTRAINTS = {
-    "Partition": ["year", "remote", "meeting_days", "meeting_time"],
+    "Partition": ["year", "disc_times_options"],
     "Existing": {
         "type": "explicit_keys",
         "flag": "is_existing",
@@ -416,7 +346,7 @@ def is_underrepresented(props):
     )
 
 
-def post_processing(matches: list):
+def not_post_processing(matches: list):
     from collections import Counter
     import pandas as pd
 
@@ -503,11 +433,13 @@ def post_processing(matches: list):
         if match.source == "existing":
             continue
         by_size[match.size] = by_size.get(match.size, []) + [match]
-    matches = [match for match in matches if match not in by_size[2]]
-    for arr in batch(by_size[2], n=2):
-        props = sum((x.node.props for x in arr), [])
-        node = Node(props, size=(len(arr) * 2), assigned=True)
-        matches.append(Match(node=node, source="path", path="(manually fixed)"))
+
+    matches = [match for match in matches if 2 in by_size and match not in by_size[2]]
+    if 2 in by_size:
+        for arr in batch(by_size[2], n=2):
+            props = sum((x.node.props for x in arr), [])
+            node = Node(props, size=(len(arr) * 2), assigned=True)
+            matches.append(Match(node=node, source="path", path="(manually fixed)"))
 
     # handle students who asked for existing groups, but for some reason (didn't communicate, etc.) ended up as a solo (and now, we have no non-demo preferences to go off of)
     existing_singletons = []
