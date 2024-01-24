@@ -2,4 +2,4 @@ venv
 
 .idea
 
-inpData
+inpData/*.csv

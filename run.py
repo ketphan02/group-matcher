@@ -129,7 +129,7 @@ def run():
         df = pd.DataFrame(
             sum([match.to_json(group_num=i) for i, match in enumerate(matched)], [])
         )
-        out_fname = "out-private.csv"
+        out_fname = f"out-private-{num_accounted_for}.csv"
         out_fname_format = "out-private-{}.csv"
         if os.path.isfile(out_fname):
             i = 2
