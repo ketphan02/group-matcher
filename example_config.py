@@ -109,6 +109,8 @@ def email_transformer(email):
 
 # ## cancelled discussions; 12-1 and 5-6
 def discussion_transformer(disc_list):
+    if disc_list == ["[]"]:
+        return [-1]
     return list(map(lambda x: int(x.strip("[']").split(", ")[0]), disc_list))
 
 
