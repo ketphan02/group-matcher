@@ -208,7 +208,7 @@ CONSTRAINTS = {
     },
     # "Best-effort": [],
     "Best-effort": [
-        ["gender", "year"],
+        ["gender", "race"],
         [1, 1],
     ],  # column ID's for features followed by weights
 }

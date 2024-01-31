@@ -64,7 +64,7 @@ def parse_column(col, val):
 
 def parse_from_csv(csv_path: str, row_config: Row, debug: bool = False) -> list:
     # Parse given CSV into a Pandas DataFrame object
-    data = pd.read_csv(csv_path, dtype=str, delimiter=';')
+    data = pd.read_csv(csv_path, dtype=str, delimiter=";")
 
     # Construct a mapping from column index to Column object
     csv_columns = data.columns.values
