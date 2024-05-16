@@ -306,7 +306,7 @@ def postprocess_partitions(subgroups: list) -> list:
     # Race: 2-6 are underrepresented
     # Gender: not male == underrepresented
 
-    for (group_num, group) in enumerate(subgroups):
+    for group_num, group in enumerate(subgroups):
         new_nodes = []
         for at in group_genders(sum((node.props for node in group[2]), [])):
             merged = Node(at, size=len(at), assigned=True)
@@ -555,7 +555,7 @@ def not_post_processing(matches: list):
         ("non-mf", is_nonmf),
         ("underrepresented", is_underrepresented),
     ]
-    for (minority_group, minority_fn) in minority_groups:
+    for minority_group, minority_fn in minority_groups:
         fractions, lengths = {}, {}
         for match in matches:
             if match.source == "existing":
@@ -590,7 +590,7 @@ def not_post_processing(matches: list):
     match_depths = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
     for match in matches:
         reconstruct_path(match)
-    for (i, match) in enumerate(matches):
+    for i, match in enumerate(matches):
         if (
             match.path
             and str(match.path) != "(manually fixed)"

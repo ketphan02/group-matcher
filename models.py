@@ -69,9 +69,7 @@ class Configuration(object):
 
 
 class Node(object):
-    def __init__(
-        self, props: list, size: int = 1, assigned: bool = False
-    ):
+    def __init__(self, props: list, size: int = 1, assigned: bool = False):
         self.props = props
         self.size = size
         self.assigned = assigned

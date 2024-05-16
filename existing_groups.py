@@ -81,7 +81,7 @@ def handle_existing(config: Configuration, nodes: list, debug: bool = False) -> 
         # One last pass: annotate everybody with their incoming edges (people who put them as partners)
         for key in key_to_node:
             key_to_node[key].props[0]["incoming_partners"] = predecessor_map[key]
-            for (i, person) in enumerate(successor_map[key]):
+            for i, person in enumerate(successor_map[key]):
                 if person not in key_to_node:
                     successor_map[key][
                         i
